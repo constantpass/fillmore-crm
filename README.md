@@ -10,22 +10,35 @@ even on your home network -- it only listens on `127.0.0.1`, which is a
 fancy way of saying "this machine, and only this machine." Your client
 data never leaves your PC.
 
-## Install (one time)
+## Quick start (Mac, Windows, or Linux)
 
-1. Open a terminal in this folder (the one with `install.sh` in it).
-2. Run:
-   ```
-   ./install.sh
-   ```
-3. It'll ask for your password once (to install two small pieces of
-   software it needs -- Flask and python-docx, both just tools, nothing
-   that touches your data).
-4. When it finishes, open **http://127.0.0.1:8850/** in your browser.
+You need Python 3 installed (Mac and Linux already have it; on Windows,
+get it from [python.org](https://www.python.org/downloads/) -- check "Add
+Python to PATH" during install).
 
-That's it. It keeps running quietly in the background from now on --
-closing the browser tab does NOT turn it off, so it's always ready. If you
-ever want to fully stop it: `systemctl --user stop fillmore-crm.service`.
-To start it again: `systemctl --user start fillmore-crm.service`.
+1. Download this repo (green **Code** button -> **Download ZIP**, then
+   unzip it -- or `git clone` if you use git) and open a terminal/folder
+   there.
+2. **Mac or Linux:** run `./run.sh`
+   **Windows:** double-click `run.bat`
+3. First run takes ~30 seconds (it's setting up its own private Python
+   environment right next to this folder -- doesn't touch anything else
+   on your system). Your browser opens automatically to
+   **http://127.0.0.1:8850/**.
+4. Leave that terminal window open while you're using it -- closing it
+   stops the app. Run the same command again any time to start it back up
+   (fast after the first time).
+
+Your data (`db.sqlite3`, photos) is stored outside this folder, so
+re-downloading or moving this repo never touches your real records.
+
+## Always-on background service (Linux/Arch only, optional)
+
+If you're on this same Omarchy/Arch setup and want it running permanently
+in the background instead of in a terminal window, use `./install.sh`
+instead of `run.sh` -- it installs a systemd user service. Stop it with
+`systemctl --user stop fillmore-crm.service`, start it again with
+`systemctl --user start fillmore-crm.service`.
 
 ## What's in it right now
 
