@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Fillmore CRM -- Dashboard{% endblock %}
+{% block content %}
+
+<div class="section-label"><span class="rule short"></span>Acquisitions Pipeline<span class="rule"></span></div>
+<div class="funnel">
+  {% for p in phases %}
+  <div class="stage">
+    <div class="count">{{ phase_counts[p] }}</div>
+    <div class="label">{{ phase_labels[p] }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-label"><span class="rule short"></span>Today ({{ today }})<span class="rule"></span></div>
+<div class="panel">
+  {% if today_items %}
+    <div class="today-list">
+      {% for item in today_items %}
+      <div class="today-row">
+        <div>
+          <span class="tag">{{ item.cadence.label }}</span> &middot;
+          <a class="who" href="{{ url_for('property_detail', property_id=item.id) }}">{{ item.owner_name or 'Unnamed contact' }}</a>
+          <span class="addr">{{ item.address }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p style="color:var(--warm-gray)">Nothing due today.</p>
+  {% endif %}
+</div>
+
+<div class="section-label"><span class="rule short"></span>Projects<span class="rule"></span></div>
+
+{% for pv in projects_view %}
+<div class="project-block panel" style="margin-bottom:1rem;">
+  <div class="project-title">
+    <span>{{ pv.project.name }}</span>
+    <span style="font-size:0.8rem; color:var(--warm-gray)">{{ pv.properties|length }} properties</span>
+  </div>
+  {% for prop in pv.properties %}
+  <a class="property-row" href="{{ url_for('property_detail', property_id=prop.id) }}">
+    <span>{{ prop.owner_name or 'Unnamed contact' }} &mdash; {{ prop.address }}</span>
+    <span class="phase-chip phase-{{ prop.phase }}">{{ phase_labels[prop.phase] }}</span>
+  </a>
+  {% endfor %}
+  <form class="inline" method="post" action="{{ url_for('property_new') }}" style="margin-top:0.8rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+    <input type="hidden" name="project_id" value="{{ pv.project.id }}">
+    <input name="address" placeholder="New property address" style="flex:2; min-width:200px;" required>
+    <input name="owner_name" placeholder="Owner name" style="flex:1; min-width:150px;">
+    <button type="submit">Add Property</button>
+  </form>
+</div>
+{% endfor %}
+
+<div class="panel" style="margin-top:1rem;">
+  <form method="post" action="{{ url_for('project_new') }}" style="display:flex; gap:0.5rem;">
+    <input name="name" placeholder="New project name (e.g. the Palmetto Ave assemblage)" required style="flex:1;">
+    <button type="submit" class="secondary">New Project</button>
+  </form>
+</div>
+
+<div class="section-label"><span class="rule short"></span>Data<span class="rule"></span></div>
+<a class="btn secondary" href="{{ url_for('export_backup') }}">Download full backup (.zip)</a>
+
+{% endblock %}

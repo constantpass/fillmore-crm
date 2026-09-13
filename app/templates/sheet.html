@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Sheet -- Fillmore CRM{% endblock %}
+{% block content %}
+
+<div class="section-label"><span class="rule short"></span>Full Sheet<span class="rule"></span></div>
+
+<input type="text" id="sheet-search" class="sheet-search" placeholder="Search name, business, address, phase...">
+
+<div class="sheet-table-wrap">
+  <table class="sheet" id="sheet-table">
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Owner Name</th>
+        <th>Business Name</th>
+        <th>Address</th>
+        <th>Phase</th>
+        <th>Owner Contact</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr data-search="{{ (row.project_name ~ ' ' ~ (row.owner_name or '') ~ ' ' ~ (row.business_name or '') ~ ' ' ~ row.address ~ ' ' ~ phase_labels[row.phase])|lower }}">
+        <td>{{ row.project_name }}</td>
+        <td>{{ row.owner_name or 'Unnamed contact' }}</td>
+        <td>{{ row.business_name or '—' }}</td>
+        <td>{{ row.address }}</td>
+        <td><span class="phase-chip phase-{{ row.phase }}">{{ phase_labels[row.phase] }}</span></td>
+        <td>{{ row.owner_contact or '—' }}</td>
+        <td style="white-space:nowrap;">
+          <a href="{{ url_for('property_detail', property_id=row.id) }}" class="btn secondary" style="padding:0.35rem 0.7rem;">Open</a>
+          <form class="inline" method="post" action="{{ url_for('property_delete', property_id=row.id) }}" onsubmit="return confirm('Delete this property? This removes its photos and activity log too. This cannot be undone.');">
+            <input type="hidden" name="next" value="sheet">
+            <button type="submit" class="btn-danger" style="padding:0.35rem 0.7rem; font-family:inherit;">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" style="color:var(--warm-gray);">No properties yet -- add one below.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="section-label"><span class="rule short"></span>Add Property<span class="rule"></span></div>
+<div class="panel">
+  <form method="post" action="{{ url_for('property_new') }}" style="display:flex; gap:0.6rem; flex-wrap:wrap; align-items:flex-end;">
+    <input type="hidden" name="next" value="sheet">
+    <div style="flex:1; min-width:160px;">
+      <label>Project</label>
+      <select name="project_id" required>
+        {% for p in projects %}
+        <option value="{{ p.id }}">{{ p.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div style="flex:2; min-width:200px;">
+      <label>Address</label>
+      <input name="address" required>
+    </div>
+    <div style="flex:1; min-width:150px;">
+      <label>Owner name</label>
+      <input name="owner_name">
+    </div>
+    <div style="flex:1; min-width:150px;">
+      <label>Business name</label>
+      <input name="business_name">
+    </div>
+    <button type="submit">Add Property</button>
+  </form>
+  {% if not projects %}
+  <p style="color:var(--warm-gray); margin-top:0.8rem;">Create a project on the <a href="{{ url_for('index') }}">Dashboard</a> first.</p>
+  {% endif %}
+</div>
+
+<script>
+(function () {
+  var input = document.getElementById('sheet-search');
+  var rows = document.querySelectorAll('#sheet-table tbody tr');
+  input.addEventListener('input', function () {
+    var q = input.value.trim().toLowerCase();
+    rows.forEach(function (row) {
+      var haystack = row.getAttribute('data-search') || '';
+      row.classList.toggle('row-hidden', q !== '' && haystack.indexOf(q) === -1);
+    });
+  });
+})();
+</script>
+
+{% endblock %}

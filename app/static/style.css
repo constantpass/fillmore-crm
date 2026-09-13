@@ -1,0 +1,326 @@
+/* Fillmore CRM -- fixed brand palette, not theme-adaptive (this is a
+   browser page, not a desktop widget). Understated boutique tone matching
+   fillmorereg.com: cream/charcoal/warm gray, no bright accent colors. */
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/static/fonts/EBGaramond.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  --cream: #F7F4EF;
+  --panel: #FFFFFF;
+  --ink: #15130F;
+  --ink-soft: #4A463E;
+  --rule: #C9C2B4;
+  --warm-gray: #8B8478;
+  --accent-band: #15130F;
+  --band-ink: #F7F4EF;
+  --danger: #7A3B2E;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.brand-band {
+  background: var(--accent-band);
+  color: var(--band-ink);
+  padding: 1.1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-band img.logo {
+  height: 34px;
+}
+
+.brand-eyebrow {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--band-ink);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.brand-eyebrow .rule {
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  background: var(--band-ink);
+  opacity: 0.55;
+}
+
+.tools-bar {
+  background: var(--panel);
+  border-bottom: 1px solid var(--rule);
+  padding: 0.55rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+.tools-bar a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.tools-bar a:hover { color: var(--danger); }
+.tools-bar a.tools-nav { color: var(--ink); font-weight: bold; }
+.tools-divider {
+  width: 1px;
+  height: 0.9rem;
+  background: var(--rule);
+  display: inline-block;
+}
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 4rem;
+}
+
+h1, h2, h3 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  margin: 0 0 0.5rem;
+}
+
+.section-label {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 2rem 0 0.9rem;
+}
+.section-label .rule { flex: 1; height: 1px; background: var(--rule); }
+.section-label .rule.short { flex: none; width: 24px; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 1.25rem 1.4rem;
+}
+
+.funnel {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+.funnel .stage {
+  background: var(--panel);
+  padding: 0.9rem 0.6rem;
+  text-align: center;
+}
+.funnel .stage .count { font-size: 1.6rem; }
+.funnel .stage .label {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-top: 0.2rem;
+}
+
+.today-list { display: flex; flex-direction: column; gap: 0; }
+.today-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 0.6rem 0; border-bottom: 1px solid var(--rule);
+}
+.today-row:last-child { border-bottom: none; }
+.today-row .who {
+  font-weight: bold; color: var(--ink); text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+}
+.today-row .who:hover { color: var(--danger); border-bottom-color: var(--danger); }
+.today-row .addr { color: var(--ink-soft); font-size: 0.9rem; margin-left: 0.5rem; }
+.today-row .tag {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+.project-block { margin-bottom: 1.5rem; }
+.project-title { font-size: 1.15rem; display: flex; justify-content: space-between; align-items: baseline; }
+.property-row {
+  display: flex; justify-content: space-between; padding: 0.55rem 0;
+  border-bottom: 1px solid var(--rule); text-decoration: none; color: var(--ink);
+}
+.property-row:last-child { border-bottom: none; }
+.property-row:hover { background: var(--cream); margin: 0 -0.4rem; padding: 0.55rem 0.4rem; }
+.property-row .phase-chip {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--warm-gray); border: 1px solid var(--rule); padding: 0.15rem 0.5rem; border-radius: 2px;
+}
+/* Pipeline progress reads in the chip itself, not just its text -- later
+   stages darken toward the brand ink, closing fills solid. */
+.phase-chip.phase-contact { color: var(--ink-soft); border-color: var(--warm-gray); }
+.phase-chip.phase-loi { color: var(--ink-soft); border-color: var(--ink-soft); background: rgba(21,19,15,0.04); }
+.phase-chip.phase-contract { color: var(--ink); border-color: var(--ink-soft); background: rgba(21,19,15,0.08); }
+.phase-chip.phase-deal { color: var(--ink); border-color: var(--ink); background: rgba(21,19,15,0.14); font-weight: bold; }
+.phase-chip.phase-closing { color: var(--band-ink); border-color: var(--ink); background: var(--ink); font-weight: bold; }
+
+form.inline { display: inline; }
+input, textarea, select {
+  font-family: Georgia, serif; font-size: 0.95rem;
+  border: 1px solid var(--rule); border-radius: 2px; padding: 0.45rem 0.6rem;
+  background: var(--panel); color: var(--ink); width: 100%;
+}
+select { cursor: pointer; }
+input:focus, textarea:focus, select:focus {
+  outline: none; border-color: var(--ink-soft); box-shadow: 0 0 0 3px rgba(21,19,15,0.08);
+}
+input[type="file"] {
+  border: none; padding: 0.3rem 0; width: auto; font-size: 0.85rem; color: var(--ink-soft);
+}
+input[type="file"]::file-selector-button {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--panel); color: var(--ink); border: 1px solid var(--rule);
+  border-radius: 2px; padding: 0.4rem 0.8rem; margin-right: 0.7rem; cursor: pointer;
+}
+input[type="file"]::file-selector-button:hover { background: var(--cream); }
+label { font-size: 0.8rem; color: var(--warm-gray); display: block; margin-bottom: 0.2rem; }
+.field { margin-bottom: 0.8rem; }
+button, .btn {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--accent-band); color: var(--band-ink);
+  border: none; border-radius: 2px; padding: 0.55rem 1rem; cursor: pointer;
+  text-decoration: none; display: inline-block; transition: opacity 0.15s ease;
+}
+button:hover, .btn:hover { opacity: 0.82; }
+button.secondary, .btn.secondary {
+  background: var(--panel); color: var(--ink); border: 1px solid var(--rule);
+}
+button.secondary:hover, .btn.secondary:hover { background: var(--cream); opacity: 1; }
+
+.detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+@media (max-width: 800px) { .detail-grid { grid-template-columns: 1fr; } }
+
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.6rem; }
+.photo-grid img { width: 100%; border-radius: 2px; border: 1px solid var(--rule); }
+
+#map { height: 260px; border: 1px solid var(--rule); border-radius: 3px; transition: box-shadow 0.3s ease; }
+.map-flash { box-shadow: 0 0 0 3px var(--danger); }
+
+/* ---------- tool tray ---------- */
+/* External lookup tools (SunBiz, True People Search, LoopNet, Gmail, etc.)
+   all refuse to be embedded in this page -- see the comment in base.html.
+   This tray keeps a one-click way back to whichever of them you already
+   opened, so the CRM page itself never has to be left behind. */
+.tool-tray {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--accent-band);
+  color: var(--band-ink);
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.82rem;
+  z-index: 500;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+}
+.tool-tray[hidden] { display: none; }
+.tool-tray-label { color: var(--warm-gray); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.72rem; }
+.tool-tray-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tool-tray-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(247,244,239,0.1);
+  border: 1px solid rgba(247,244,239,0.25);
+  border-radius: 3px;
+  padding: 0.2rem 0.3rem 0.2rem 0.6rem;
+}
+.tool-tray-chip a { color: var(--band-ink); text-decoration: none; }
+.tool-tray-chip a:hover { color: var(--danger); }
+.tool-tray-close {
+  background: none;
+  border: none;
+  color: var(--warm-gray);
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0 0.3rem;
+}
+.tool-tray-close:hover { color: var(--band-ink); }
+body:has(.tool-tray:not([hidden])) .wrap { padding-bottom: 3rem; }
+
+.history-row { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px dashed var(--rule); font-size: 0.9rem; }
+
+.sibling-list a { display: block; padding: 0.4rem 0; border-bottom: 1px solid var(--rule); color: var(--ink); text-decoration: none; }
+.sibling-list a:last-child { border-bottom: none; }
+.sibling-list a:hover { color: var(--danger); }
+
+/* ---------- sheet view ---------- */
+.sheet-search {
+  font-size: 1rem;
+  padding: 0.65rem 0.9rem;
+  margin-bottom: 1rem;
+}
+.sheet-table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 3px; }
+table.sheet {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel);
+  font-size: 0.9rem;
+}
+table.sheet th {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--warm-gray); text-align: left;
+  padding: 0.7rem 0.8rem;
+  border-bottom: 2px solid var(--rule);
+  white-space: nowrap;
+}
+table.sheet td {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: middle;
+}
+table.sheet tr:last-child td { border-bottom: none; }
+table.sheet tr:hover td { background: var(--cream); }
+table.sheet a { color: var(--ink); text-decoration: none; }
+table.sheet a:hover { color: var(--danger); }
+table.sheet .row-hidden { display: none; }
+
+.btn-danger {
+  background: transparent; color: var(--danger); border: 1px solid var(--danger);
+}
+.btn-danger:hover { background: var(--danger); color: var(--band-ink); opacity: 1; }
+
+.link-fallback { color: var(--warm-gray) !important; font-style: italic; }
+
+@media print {
+  .brand-band, .tools-bar, nav, .no-print { display: none !important; }
+  body { background: white; }
+  .wrap { max-width: none; padding: 0; }
+}

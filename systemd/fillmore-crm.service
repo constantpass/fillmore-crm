@@ -1,0 +1,14 @@
+[Unit]
+Description=Fillmore CRM (local-only property/deal tracker)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/share/fillmore-crm/app
+Environment=FILLMORE_DATA_DIR=%h/.local/share/fillmore-crm
+ExecStart=/usr/bin/python3 %h/.local/share/fillmore-crm/app/app.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

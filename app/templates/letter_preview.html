@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Letter preview -- {{ prop.address }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .letter-page { background: white; padding: 2rem; max-width: 680px; margin: 2rem auto; border: 1px solid var(--rule); white-space: pre-wrap; font-family: Georgia, serif; }
+    @media print { .letter-page { border: none; margin: 0; padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="no-print" style="padding:1rem; text-align:center;">
+    <a href="javascript:window.print()" class="btn">Print</a>
+    <a href="javascript:history.back()" class="btn secondary">Back</a>
+  </div>
+  {% if no_template %}
+  <div class="letter-page">No letter template found. Drop your .docx at ~/.local/share/fillmore-crm/letter_template.docx first.</div>
+  {% else %}
+  <div class="letter-page">{{ text }}</div>
+  {% endif %}
+</body>
+</html>

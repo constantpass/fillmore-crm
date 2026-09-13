@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}{{ prop.address }} -- Fillmore CRM{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+{% endblock %}
+{% block content %}
+
+<p><a href="{{ url_for('index') }}" style="color:var(--warm-gray); text-decoration:none;">&larr; Dashboard</a> &middot; <a href="{{ url_for('sheet_view') }}" style="color:var(--warm-gray); text-decoration:none;">Sheet</a> &middot; {{ prop.project_name }}</p>
+<h1>{{ prop.owner_name or 'Unnamed contact' }}{% if prop.business_name %} <span style="color:var(--warm-gray); font-size:0.6em; font-weight:normal;">({{ prop.business_name }})</span>{% endif %}</h1>
+<p style="color:var(--ink-soft)">{{ prop.address }}</p>
+
+<div class="detail-grid">
+  <div>
+    <div class="section-label"><span class="rule short"></span>Details<span class="rule"></span></div>
+    <div class="panel">
+      <div class="field">
+        <form method="post" action="{{ url_for('property_set_phase', property_id=prop.id) }}">
+          <label>Phase</label>
+          <select name="phase" onchange="this.form.submit()">
+            {% for p in phases %}
+            <option value="{{ p }}" {% if p == prop.phase %}selected{% endif %}>{{ phase_labels[p] }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+      <form method="post" action="{{ url_for('property_set_details', property_id=prop.id) }}" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.9rem;">
+        <div class="field" style="flex:1; min-width:140px; margin-bottom:0;">
+          <label>Owner name</label>
+          <input name="owner_name" value="{{ prop.owner_name or '' }}">
+        </div>
+        <div class="field" style="flex:1; min-width:140px; margin-bottom:0;">
+          <label>Owner contact</label>
+          <input name="owner_contact" value="{{ prop.owner_contact or '' }}">
+        </div>
+        <div class="field" style="flex:1; min-width:140px; margin-bottom:0;">
+          <label>Business name (SunBiz)</label>
+          <input name="business_name" value="{{ prop.business_name or '' }}" placeholder="e.g. Finch Holdings LLC">
+        </div>
+        <button type="submit" class="secondary">Save Details</button>
+      </form>
+      <div class="field">
+        <label>Cadence status</label>
+        {% if prop.cadence.due %}<span class="tag" style="color:var(--danger)">{{ prop.cadence.label }}</span>{% else %}<span style="color:var(--warm-gray)">No action due today</span>{% endif %}
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <form method="post" action="{{ url_for('property_log_call', property_id=prop.id) }}">
+          <input type="hidden" name="outcome" value="no_answer">
+          <button type="submit" class="secondary">Log call (no answer)</button>
+        </form>
+        <form method="post" action="{{ url_for('property_log_call', property_id=prop.id) }}">
+          <input type="hidden" name="outcome" value="answered">
+          <button type="submit" class="secondary">Log call (answered)</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="section-label"><span class="rule short"></span>Look Up This Property<span class="rule"></span></div>
+    <div class="panel" style="display:flex; flex-direction:column; gap:0.5rem;">
+      {% for label, url, verified, kind in deep_links %}
+      {% if kind == 'map' %}
+      <a href="#map" onclick="focusPropertyMap(); return false;" class="">{{ label }}</a>
+      {% else %}
+      <a href="{{ url }}" onclick="return openTool('{{ url }}', '{{ label }}', event)" class="{{ '' if verified else 'link-fallback' }}">
+        {{ label }}{% if not verified %} (opens tool -- no direct link available){% endif %}
+      </a>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="section-label"><span class="rule short"></span>Notes<span class="rule"></span></div>
+    <div class="panel">
+      <form method="post" action="{{ url_for('property_set_notes', property_id=prop.id) }}">
+        <textarea name="notes" rows="5">{{ prop.notes }}</textarea>
+        <div style="margin-top:0.6rem;"><button type="submit">Save Notes</button></div>
+      </form>
+    </div>
+
+    <div class="section-label"><span class="rule short"></span>Location<span class="rule"></span></div>
+    <div class="panel">
+      <div id="map" class="map-embed"></div>
+      <form method="post" action="{{ url_for('property_set_location', property_id=prop.id) }}" style="display:flex; gap:0.5rem; margin-top:0.7rem;">
+        <input name="lat" placeholder="Latitude" value="{{ prop.lat or '' }}" required>
+        <input name="lng" placeholder="Longitude" value="{{ prop.lng or '' }}" required>
+        <button type="submit" class="secondary">Set Pin</button>
+      </form>
+    </div>
+
+    <div class="section-label"><span class="rule short"></span>Photos<span class="rule"></span></div>
+    <div class="panel">
+      <div class="photo-grid" style="margin-bottom:1rem;">
+        {% for photo in photos %}
+        <img src="{{ url_for('serve_photo', filename=photo.filename) }}" alt="{{ photo.caption }}">
+        {% endfor %}
+      </div>
+      <form method="post" action="{{ url_for('property_add_photo', property_id=prop.id) }}" enctype="multipart/form-data" style="display:flex; gap:0.5rem;">
+        <input type="file" name="photo" accept="image/*" required>
+        <input name="caption" placeholder="Caption (optional)">
+        <button type="submit">Upload</button>
+      </form>
+    </div>
+
+    <div class="section-label"><span class="rule short"></span>Letter<span class="rule"></span></div>
+    <div class="panel">
+      {% if has_template %}
+      <div style="display:flex; gap:0.5rem;">
+        <a class="btn" href="{{ url_for('property_letter_preview', property_id=prop.id) }}">Preview</a>
+        <a class="btn secondary" href="{{ url_for('property_letter_download', property_id=prop.id) }}">Download filled .docx</a>
+        <form method="post" action="{{ url_for('property_log_letter', property_id=prop.id) }}">
+          <button type="submit" class="secondary">Log letter sent</button>
+        </form>
+      </div>
+      {% else %}
+      <p style="color:var(--warm-gray)">No letter template found. Drop your .docx (with {{ '{{name}}' }}, {{ '{{address}}' }}, {{ '{{date}}' }} tokens) at <code>~/.local/share/fillmore-crm/letter_template.docx</code> to enable this.</p>
+      {% endif %}
+    </div>
+
+    <div class="section-label"><span class="rule short"></span>History<span class="rule"></span></div>
+    <div class="panel">
+      {% for h in history %}<div class="history-row"><span>{{ h.label }}</span><span>{{ h.at }}</span></div>{% endfor %}
+      {% if not history %}<p style="color:var(--warm-gray)">No activity logged yet.</p>{% endif %}
+    </div>
+
+    <div class="section-label"><span class="rule short"></span>Danger Zone<span class="rule"></span></div>
+    <div class="panel">
+      <form method="post" action="{{ url_for('property_delete', property_id=prop.id) }}" onsubmit="return confirm('Delete this property permanently? This removes its photos and full activity log too. This cannot be undone.');">
+        <input type="hidden" name="next" value="index">
+        <button type="submit" class="btn-danger">Delete This Property</button>
+      </form>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label"><span class="rule short"></span>Same Project<span class="rule"></span></div>
+    <div class="panel sibling-list">
+      {% for s in siblings %}
+      <a href="{{ url_for('property_detail', property_id=s.id) }}">{{ s.owner_name or 'Unnamed contact' }} &mdash; {{ s.address }}</a>
+      {% else %}
+      <p style="color:var(--warm-gray)">No other properties in this project yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+  var lat = {{ prop.lat or 27.9944 }}, lng = {{ prop.lng or -81.7603 }};
+  var map = L.map('map').setView([lat, lng], {{ '13' if prop.lat else '7' }});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  {% if prop.lat %}
+  var propertyMarker = L.marker([lat, lng]).addTo(map);
+  {% endif %}
+
+  function focusPropertyMap() {
+    var mapPanel = document.getElementById('map');
+    mapPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    map.setView([lat, lng], 16, { animate: true });
+    mapPanel.classList.add('map-flash');
+    setTimeout(function () { mapPanel.classList.remove('map-flash'); }, 1200);
+  }
+</script>
+{% endblock %}

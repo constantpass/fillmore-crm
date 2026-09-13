@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Fillmore CRM{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="brand-band">
+    <a href="{{ url_for('index') }}" style="display:flex; align-items:center; text-decoration:none;">
+      <img class="logo" src="{{ url_for('static', filename='logo.png') }}" alt="Fillmore Real Estate Group">
+    </a>
+    <span class="brand-eyebrow"><span class="rule"></span>Acquisitions Workspace<span class="rule"></span></span>
+  </div>
+  <div class="tools-bar no-print">
+    <a href="{{ url_for('index') }}" class="tools-nav">Dashboard</a>
+    <a href="{{ url_for('sheet_view') }}" class="tools-nav">Sheet</a>
+    <span class="tools-divider"></span>
+    {% for label, url in tools %}
+    <a href="{{ url }}" onclick="return openTool('{{ url }}', '{{ label }}', event)">{{ label }}</a>
+    {% endfor %}
+  </div>
+  <div class="wrap">
+    {% block content %}{% endblock %}
+  </div>
+
+  <div id="tool-tray" class="tool-tray no-print" hidden>
+    <span class="tool-tray-label">Open tools</span>
+    <div id="tool-tray-chips" class="tool-tray-chips"></div>
+  </div>
+
+  <script>
+    // Tools like SunBiz, True People Search, LoopNet, Gmail, and Google
+    // Maps itself all send back headers that refuse to be embedded in this
+    // page (X-Frame-Options / frame-ancestors) -- that's their own
+    // anti-clickjacking policy, not something this app can override. So
+    // instead of a broken/blank iframe, each tool gets its own reusable
+    // popup window: opening the same tool again re-focuses that window
+    // instead of piling up duplicates, and the tray below lets you jump
+    // back to any tool you already opened without losing this page.
+    function trayKey(label) { return 'fillmore_tool_' + label.replace(/[^a-z0-9]/gi, '_'); }
+
+    function loadTray() {
+      try { return JSON.parse(sessionStorage.getItem('fillmore_tray') || '[]'); }
+      catch (e) { return []; }
+    }
+    function saveTray(items) {
+      try { sessionStorage.setItem('fillmore_tray', JSON.stringify(items)); } catch (e) {}
+    }
+    function renderTray() {
+      var items = loadTray();
+      var tray = document.getElementById('tool-tray');
+      var chips = document.getElementById('tool-tray-chips');
+      if (!tray || !chips) return;
+      chips.innerHTML = '';
+      items.forEach(function (item) {
+        var chip = document.createElement('span');
+        chip.className = 'tool-tray-chip';
+        var open = document.createElement('a');
+        open.href = item.url;
+        open.textContent = item.label;
+        open.onclick = function (e) { return openTool(item.url, item.label, e); };
+        chip.appendChild(open);
+        var close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'tool-tray-close';
+        close.textContent = '×';
+        close.title = 'Remove from tray';
+        close.onclick = function () { removeFromTray(item.label); };
+        chip.appendChild(close);
+        chips.appendChild(chip);
+      });
+      tray.hidden = items.length === 0;
+    }
+    function removeFromTray(label) {
+      saveTray(loadTray().filter(function (i) { return i.label !== label; }));
+      renderTray();
+    }
+    function openTool(url, label, event) {
+      if (event) event.preventDefault();
+      window.open(url, trayKey(label), 'width=1200,height=850,noopener');
+      var items = loadTray().filter(function (i) { return i.label !== label; });
+      items.push({ label: label, url: url });
+      saveTray(items);
+      renderTray();
+      return false;
+    }
+    document.addEventListener('DOMContentLoaded', renderTray);
+  </script>
+</body>
+</html>
